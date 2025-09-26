@@ -14,9 +14,9 @@ export function MainShell() {
         </NavLink>
         <nav className="app-nav">
           <NavLink to="/" end>
-            Gösterge Paneli
+            GÃ¶sterge Paneli
           </NavLink>
-          <NavLink to="/business">Ýþletme Ayarlarý</NavLink>
+          <NavLink to="/business">Ä°ÅŸletme AyarlarÄ±</NavLink>
           <NavLink to="/staff">Personeller</NavLink>
           <NavLink to="/services">Hizmetler</NavLink>
         </nav>
@@ -25,7 +25,7 @@ export function MainShell() {
           <div className="user-info">
             <span>{user.fullName || user.email}</span>
             <button type="button" onClick={logout} className="link-button">
-              Çýkýþ Yap
+              Ã‡Ä±kÄ±ÅŸ Yap
             </button>
           </div>
         ) : null}
