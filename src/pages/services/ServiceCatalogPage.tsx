@@ -88,17 +88,17 @@ export function ServiceCatalogPage() {
                 <Form className="form-grid">
                   <label>
                     <span>Kategori Adı</span>
-                    <input name="name" value={values.name} onChange={handleChange} />
+                    <input name="name" value={values.name} onChange={handleChange} className="form-input" />
                     {touched.name && errors.name ? <small className="form-error">{errors.name}</small> : null}
                   </label>
                   <label>
                     <span>Açıklama</span>
-                    <input name="description" value={values.description} onChange={handleChange} />
+                    <input name="description" value={values.description} onChange={handleChange} className="form-input" />
                   </label>
                   <div className="form-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1rem" }}>
                     <label>
                       <span>Sıra</span>
-                      <input type="number" name="displayOrder" value={values.displayOrder} onChange={handleChange} />
+                      <input type="number" name="displayOrder" value={values.displayOrder} onChange={handleChange} className="form-input" />
                     </label>
                     <label className="inline">
                       <input type="checkbox" name="isActive" checked={values.isActive} onChange={handleChange} /> Aktif
@@ -175,34 +175,34 @@ export function ServiceCatalogPage() {
                 <Form className="form-grid">
                   <label>
                     <span>Hizmet Adı</span>
-                    <input name="name" value={values.name} onChange={handleChange} />
+                    <input name="name" value={values.name} onChange={handleChange} className="form-input" />
                     {touched.name && errors.name ? <small className="form-error">{errors.name}</small> : null}
                   </label>
                   <label>
                     <span>Açıklama</span>
-                    <input name="description" value={values.description} onChange={handleChange} />
+                    <input name="description" value={values.description} onChange={handleChange} className="form-input" />
                   </label>
                   <div className="form-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1rem" }}>
                     <label>
                       <span>Fiyat</span>
-                      <input type="number" name="price" value={values.price} onChange={handleChange} />
+                      <input type="number" name="price" value={values.price} onChange={handleChange} className="form-input" />
                     </label>
                     <label>
                       <span>Süre (dk)</span>
-                      <input type="number" name="durationInMinutes" value={values.durationInMinutes} onChange={handleChange} />
+                      <input type="number" name="durationInMinutes" value={values.durationInMinutes} onChange={handleChange} className="form-input" />
                     </label>
                     <label>
                       <span>Tampon Süre (dk)</span>
-                      <input type="number" name="bufferTimeInMinutes" value={values.bufferTimeInMinutes} onChange={handleChange} />
+                      <input type="number" name="bufferTimeInMinutes" value={values.bufferTimeInMinutes} onChange={handleChange} className="form-input" />
                     </label>
                     <label>
                       <span>Renk Kodu</span>
-                      <input name="colorHex" value={values.colorHex} onChange={handleChange} placeholder="#7B5CFF" />
+                      <input name="colorHex" value={values.colorHex} onChange={handleChange} placeholder="#7B5CFF" className="form-input" />
                     </label>
                   </div>
                   <label>
                     <span>Kategori</span>
-                    <select name="categoryId" value={values.categoryId} onChange={handleChange}>
+                    <select name="categoryId" value={values.categoryId} onChange={handleChange} className="form-input">
                       <option value="">Kategori seçiniz</option>
                       {categories.map((category) => (
                         <option key={category.id} value={category.id}>
@@ -219,6 +219,7 @@ export function ServiceCatalogPage() {
                       name="staffIds"
                       value={values.staffIds}
                       disabled={isLoadingStaff}
+                      className="form-input"
                       onChange={(event) => {
                         const options = Array.from(event.target.selectedOptions).map((option) => option.value);
                         setFieldValue("staffIds", options);
@@ -243,29 +244,37 @@ export function ServiceCatalogPage() {
               )}
             </Formik>
 
-            <div className="service-list">
-              <ul>
-                {services.map((service) => (
-                  <li key={service.id} className={service.id === selectedServiceId ? "active" : ""}>
-                    <button type="button" onClick={() => setSelectedServiceId(service.id)}>
-                      <span className="name">{service.name}</span>
-                      <span className="meta">{service.categoryName}</span>
-                    </button>
-                  </li>
-                ))}
-                {services.length === 0 ? <li>Henüz hizmet oluşturulmadı.</li> : null}
-              </ul>
-
-              {selectedService ? (
-                <ServiceDetailCard
-                  service={selectedService}
-                  categories={categories}
-                  staffOptions={staffOptions}
-                  onUpdate={updateService}
-                  onDelete={deleteService}
-                  isSaving={isSaving}
-                />
-              ) : null}
+            <div className="service-board">
+              <div className="service-board-list">
+                <ul className="service-list">
+                  {services.map((service) => (
+                    <li key={service.id} className={service.id === selectedServiceId ? "active" : ""}>
+                      <button type="button" onClick={() => setSelectedServiceId(service.id)}>
+                        <span className="name">{service.name}</span>
+                        <span className="meta">{service.categoryName}</span>
+                      </button>
+                    </li>
+                  ))}
+                  {services.length === 0 ? (
+                    <li className="service-list-empty">Henüz hizmet oluşturulmadı.</li>
+                  ) : null}
+                </ul>
+              </div>
+              <div className="service-board-detail">
+                {selectedService ? (
+                  <ServiceDetailCard
+                    service={selectedService}
+                    categories={categories}
+                    staffOptions={staffOptions}
+                    isLoadingStaff={isLoadingStaff}
+                    onUpdate={updateService}
+                    onDelete={deleteService}
+                    isSaving={isSaving}
+                  />
+                ) : (
+                  <div className="empty-state">Listeden bir hizmet seçin veya yeni bir hizmet ekleyin.</div>
+                )}
+              </div>
             </div>
           </section>
         </div>
@@ -304,11 +313,11 @@ function CategoryListItem({ category, isSaving, onUpdate, onDelete }: CategoryLi
       >
         {({ values, handleChange, errors, touched }) => (
           <Form className="category-form">
-            <input name="name" value={values.name} onChange={handleChange} />
+            <input name="name" value={values.name} onChange={handleChange} className="form-input" />
             {touched.name && errors.name ? <small className="form-error">{errors.name}</small> : null}
-            <input name="description" value={values.description} onChange={handleChange} placeholder="Açıklama" />
+            <input name="description" value={values.description} onChange={handleChange} placeholder="Açıklama" className="form-input" />
             <div className="inline-fields">
-              <input type="number" name="displayOrder" value={values.displayOrder} onChange={handleChange} className="small" />
+              <input type="number" name="displayOrder" value={values.displayOrder} onChange={handleChange} className="form-input small" />
               <label className="inline">
                 <input type="checkbox" name="isActive" checked={values.isActive} onChange={handleChange} /> Aktif
               </label>
@@ -341,12 +350,13 @@ type ServiceDetailCardProps = {
   service: ServiceItem;
   categories: ServiceCategory[];
   staffOptions: StaffSummary[];
+  isLoadingStaff: boolean;
   onUpdate: (id: string, payload: UpdateServicePayload) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   isSaving: boolean;
 };
 
-function ServiceDetailCard({ service, categories, staffOptions, onUpdate, onDelete, isSaving }: ServiceDetailCardProps) {
+function ServiceDetailCard({ service, categories, staffOptions, isLoadingStaff, onUpdate, onDelete, isSaving }: ServiceDetailCardProps) {
   return (
     <div className="service-detail">
       <h4>{service.name}</h4>
@@ -382,33 +392,33 @@ function ServiceDetailCard({ service, categories, staffOptions, onUpdate, onDele
           <Form className="form-grid">
             <label>
               <span>Hizmet Adı</span>
-              <input name="name" value={values.name} onChange={handleChange} />
+              <input name="name" value={values.name} onChange={handleChange} className="form-input" />
             </label>
             <label>
               <span>Açıklama</span>
-              <input name="description" value={values.description} onChange={handleChange} />
+              <input name="description" value={values.description} onChange={handleChange} className="form-input" />
             </label>
             <div className="form-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1rem" }}>
               <label>
                 <span>Fiyat</span>
-                <input type="number" name="price" value={values.price} onChange={handleChange} />
+                <input type="number" name="price" value={values.price} onChange={handleChange} className="form-input" />
               </label>
               <label>
                 <span>Süre (dk)</span>
-                <input type="number" name="durationInMinutes" value={values.durationInMinutes} onChange={handleChange} />
+                <input type="number" name="durationInMinutes" value={values.durationInMinutes} onChange={handleChange} className="form-input" />
               </label>
               <label>
                 <span>Tampon Süre (dk)</span>
-                <input type="number" name="bufferTimeInMinutes" value={values.bufferTimeInMinutes} onChange={handleChange} />
+                <input type="number" name="bufferTimeInMinutes" value={values.bufferTimeInMinutes} onChange={handleChange} className="form-input" />
               </label>
               <label>
                 <span>Renk</span>
-                <input name="colorHex" value={values.colorHex} onChange={handleChange} />
+                <input name="colorHex" value={values.colorHex} onChange={handleChange} className="form-input" />
               </label>
             </div>
             <label>
               <span>Kategori</span>
-              <select name="categoryId" value={values.categoryId} onChange={handleChange}>
+              <select name="categoryId" value={values.categoryId} onChange={handleChange} className="form-input">
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -423,6 +433,7 @@ function ServiceDetailCard({ service, categories, staffOptions, onUpdate, onDele
                 name="staffIds"
                 value={values.staffIds}
                 disabled={isLoadingStaff}
+                className="form-input"
                 onChange={(event) => {
                   const options = Array.from(event.target.selectedOptions).map((option) => option.value);
                   setFieldValue("staffIds", options);
@@ -461,3 +472,8 @@ function ServiceDetailCard({ service, categories, staffOptions, onUpdate, onDele
     </div>
   );
 }
+
+
+
+
+

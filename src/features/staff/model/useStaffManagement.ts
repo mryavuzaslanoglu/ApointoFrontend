@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+ï»¿import { useCallback, useEffect, useMemo, useState } from "react";
+import { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import type {
   CreateAvailabilityOverridePayload,
@@ -10,6 +11,17 @@ import type {
   UpdateStaffSchedulePayload,
 } from "@/entities/staff/model";
 import { staffApi } from "@/features/staff/api/staffApi";
+
+const TOAST = {
+  listError: "staff-list-error",
+  detailError: "staff-detail-error",
+  createError: "staff-create-error",
+  updateError: "staff-update-error",
+  deleteError: "staff-delete-error",
+  scheduleError: "staff-schedule-error",
+  overrideCreateError: "staff-override-create-error",
+  overrideDeleteError: "staff-override-delete-error",
+} as const;
 
 export function useStaffManagement() {
   const [staffMembers, setStaffMembers] = useState<StaffSummary[]>([]);
@@ -24,30 +36,50 @@ export function useStaffManagement() {
     try {
       const list = await staffApi.getStaffList();
       setStaffMembers(list);
-      if (list.length > 0 && !selectedStaffId) {
-        setSelectedStaffId(list[0].id);
+
+      if (list.length === 0) {
+        setSelectedStaffId(null);
+        setSelectedStaff(null);
+        return;
       }
+
+      setSelectedStaffId((previous) => {
+        if (previous && list.some((item) => item.id === previous)) {
+          return previous;
+        }
+        return list[0].id;
+      });
     } catch (error) {
-      toast.error("Personel listesi yüklenemedi.");
+      if (isAxiosError(error) && error.response?.status === 404) {
+        setStaffMembers([]);
+        setSelectedStaffId(null);
+        setSelectedStaff(null);
+        return;
+      }
+
+      toast.error("Personel listesi yÃ¼klenemedi.", { toastId: TOAST.listError });
     } finally {
       setIsLoadingList(false);
     }
-  }, [selectedStaffId]);
+  }, []);
 
-  const loadStaffDetail = useCallback(
-    async (id: string) => {
-      setIsLoadingDetail(true);
-      try {
-        const detail = await staffApi.getStaffById(id);
-        setSelectedStaff(detail);
-      } catch (error) {
-        toast.error("Personel detayý yüklenemedi.");
-      } finally {
-        setIsLoadingDetail(false);
+  const loadStaffDetail = useCallback(async (id: string) => {
+    setIsLoadingDetail(true);
+    try {
+      const detail = await staffApi.getStaffById(id);
+      setSelectedStaff(detail);
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.status === 404) {
+        setSelectedStaff(null);
+        setSelectedStaffId((previous) => (previous === id ? null : previous));
+        return;
       }
-    },
-    []
-  );
+
+      toast.error("Personel detayÄ± yÃ¼klenemedi.", { toastId: TOAST.detailError });
+    } finally {
+      setIsLoadingDetail(false);
+    }
+  }, []);
 
   useEffect(() => {
     void loadStaffList();
@@ -74,7 +106,7 @@ export function useStaffManagement() {
         await loadStaffList();
         setSelectedStaffId(created.id);
       } catch (error) {
-        toast.error("Personel eklenemedi.");
+        toast.error("Personel eklenemedi.", { toastId: TOAST.createError });
         throw error;
       } finally {
         setIsSaving(false);
@@ -88,11 +120,11 @@ export function useStaffManagement() {
       setIsSaving(true);
       try {
         const updated = await staffApi.updateStaff(id, payload);
-        toast.success("Personel güncellendi.");
+        toast.success("Personel gÃ¼ncellendi.");
         setStaffMembers((prev) => prev.map((item) => (item.id === id ? { ...item, ...updated } : item)));
         setSelectedStaff(updated);
       } catch (error) {
-        toast.error("Personel güncellenemedi.");
+        toast.error("Personel gÃ¼ncellenemedi.", { toastId: TOAST.updateError });
         throw error;
       } finally {
         setIsSaving(false);
@@ -108,18 +140,16 @@ export function useStaffManagement() {
         await staffApi.deleteStaff(id);
         toast.success("Personel silindi.");
         setStaffMembers((prev) => prev.filter((item) => item.id !== id));
-        if (selectedStaffId === id) {
-          setSelectedStaffId(null);
-          setSelectedStaff(null);
-        }
+        setSelectedStaffId((prev) => (prev === id ? null : prev));
+        setSelectedStaff((prev) => (prev && prev.id === id ? null : prev));
       } catch (error) {
-        toast.error("Personel silinemedi.");
+        toast.error("Personel silinemedi.", { toastId: TOAST.deleteError });
         throw error;
       } finally {
         setIsSaving(false);
       }
     },
-    [selectedStaffId]
+    []
   );
 
   const updateSchedule = useCallback(
@@ -127,10 +157,10 @@ export function useStaffManagement() {
       setIsSaving(true);
       try {
         const schedules = await staffApi.updateSchedule(id, payload);
-        toast.success("Çalýþma takvimi güncellendi.");
+        toast.success("Ã‡alÄ±ÅŸma takvimi gÃ¼ncellendi.");
         setSelectedStaff((prev) => (prev ? { ...prev, schedules } : prev));
       } catch (error) {
-        toast.error("Çalýþma takvimi güncellenemedi.");
+        toast.error("Ã‡alÄ±ÅŸma takvimi gÃ¼ncellenemedi.", { toastId: TOAST.scheduleError });
         throw error;
       } finally {
         setIsSaving(false);
@@ -144,12 +174,12 @@ export function useStaffManagement() {
       setIsSaving(true);
       try {
         const override = await staffApi.createAvailabilityOverride(id, payload);
-        toast.success("Ýzin kaydý oluþturuldu.");
+        toast.success("Ä°zin kaydÄ± oluÅŸturuldu.");
         setSelectedStaff((prev) =>
           prev ? { ...prev, availabilityOverrides: [override, ...prev.availabilityOverrides] } : prev
         );
       } catch (error) {
-        toast.error("Ýzin kaydý oluþturulamadý.");
+        toast.error("Ä°zin kaydÄ± oluÅŸturulamadÄ±.", { toastId: TOAST.overrideCreateError });
         throw error;
       } finally {
         setIsSaving(false);
@@ -163,7 +193,7 @@ export function useStaffManagement() {
       setIsSaving(true);
       try {
         await staffApi.deleteAvailabilityOverride(id, overrideId);
-        toast.success("Ýzin kaydý silindi.");
+        toast.success("Ä°zin kaydÄ± silindi.");
         setSelectedStaff((prev) =>
           prev
             ? {
@@ -173,7 +203,7 @@ export function useStaffManagement() {
             : prev
         );
       } catch (error) {
-        toast.error("Ýzin kaydý silinemedi.");
+        toast.error("Ä°zin kaydÄ± silinemedi.", { toastId: TOAST.overrideDeleteError });
         throw error;
       } finally {
         setIsSaving(false);

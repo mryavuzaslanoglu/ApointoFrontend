@@ -170,30 +170,30 @@ function NewStaffCard({ onCancel, onSubmit, isSaving }: NewStaffCardProps) {
           <Form className="form-grid">
             <label>
               <span>Ad</span>
-              <input name="firstName" value={values.firstName} onChange={handleChange} />
+              <input name="firstName" value={values.firstName} onChange={handleChange} className="form-input" />
               {touched.firstName && errors.firstName ? <small className="form-error">{errors.firstName}</small> : null}
             </label>
             <label>
               <span>Soyad</span>
-              <input name="lastName" value={values.lastName} onChange={handleChange} />
+              <input name="lastName" value={values.lastName} onChange={handleChange} className="form-input" />
               {touched.lastName && errors.lastName ? <small className="form-error">{errors.lastName}</small> : null}
             </label>
             <label>
               <span>Unvan</span>
-              <input name="title" value={values.title} onChange={handleChange} />
+              <input name="title" value={values.title} onChange={handleChange} className="form-input" />
             </label>
             <label>
               <span>E-posta</span>
-              <input name="email" value={values.email} onChange={handleChange} />
+              <input name="email" value={values.email} onChange={handleChange} className="form-input" />
               {touched.email && errors.email ? <small className="form-error">{errors.email}</small> : null}
             </label>
             <label>
               <span>Telefon</span>
-              <input name="phoneNumber" value={values.phoneNumber} onChange={handleChange} />
+              <input name="phoneNumber" value={values.phoneNumber} onChange={handleChange} className="form-input" />
             </label>
             <label>
               <span>Rol</span>
-              <select name="userId" value={values.userId} onChange={handleChange}>
+              <select name="userId" value={values.userId} onChange={handleChange} className="form-input">
                 {staffRoles.map((role) => (
                   <option key={role.value} value={role.value}>
                     {role.label}
@@ -203,7 +203,7 @@ function NewStaffCard({ onCancel, onSubmit, isSaving }: NewStaffCardProps) {
             </label>
             <label>
               <span>İşe Başlama (UTC)</span>
-              <input type="datetime-local" name="hiredAtUtc" value={values.hiredAtUtc} onChange={handleChange} />
+              <input type="datetime-local" name="hiredAtUtc" value={values.hiredAtUtc} onChange={handleChange} className="form-input" />
             </label>
             <label className="inline">
               <input type="checkbox" name="isActive" checked={values.isActive} onChange={handleChange} /> Aktif
@@ -301,30 +301,30 @@ function StaffDetailCard({
               <Form className="form-grid">
                 <label>
                   <span>Ad</span>
-                  <input name="firstName" value={values.firstName} onChange={handleChange} />
+                  <input name="firstName" value={values.firstName} onChange={handleChange} className="form-input" />
                   {touched.firstName && errors.firstName ? <small className="form-error">{errors.firstName}</small> : null}
                 </label>
                 <label>
                   <span>Soyad</span>
-                  <input name="lastName" value={values.lastName} onChange={handleChange} />
+                  <input name="lastName" value={values.lastName} onChange={handleChange} className="form-input" />
                   {touched.lastName && errors.lastName ? <small className="form-error">{errors.lastName}</small> : null}
                 </label>
                 <label>
                   <span>Unvan</span>
-                  <input name="title" value={values.title} onChange={handleChange} />
+                  <input name="title" value={values.title} onChange={handleChange} className="form-input" />
                 </label>
                 <label>
                   <span>E-posta</span>
-                  <input name="email" value={values.email} onChange={handleChange} />
+                  <input name="email" value={values.email} onChange={handleChange} className="form-input" />
                   {touched.email && errors.email ? <small className="form-error">{errors.email}</small> : null}
                 </label>
                 <label>
                   <span>Telefon</span>
-                  <input name="phoneNumber" value={values.phoneNumber} onChange={handleChange} />
+                  <input name="phoneNumber" value={values.phoneNumber} onChange={handleChange} className="form-input" />
                 </label>
                 <label>
                   <span>Rol</span>
-                  <select name="userId" value={values.userId} onChange={handleChange}>
+                  <select name="userId" value={values.userId} onChange={handleChange} className="form-input">
                     {staffRoles.map((role) => (
                       <option key={role.value} value={role.value}>
                         {role.label}
@@ -334,11 +334,11 @@ function StaffDetailCard({
                 </label>
                 <label>
                   <span>İşe Başlama (UTC)</span>
-                  <input type="datetime-local" name="hiredAtUtc" value={values.hiredAtUtc ?? ""} onChange={handleChange} />
+                  <input type="datetime-local" name="hiredAtUtc" value={values.hiredAtUtc ?? ""} onChange={handleChange} className="form-input" />
                 </label>
                 <label>
                   <span>Ayrılış (UTC)</span>
-                  <input type="datetime-local" name="terminatedAtUtc" value={values.terminatedAtUtc ?? ""} onChange={handleChange} />
+                  <input type="datetime-local" name="terminatedAtUtc" value={values.terminatedAtUtc ?? ""} onChange={handleChange} className="form-input" />
                 </label>
                 <label className="inline">
                   <input type="checkbox" name="isActive" checked={values.isActive} onChange={handleChange} /> Aktif
@@ -490,26 +490,26 @@ function AvailabilityManager({ overrides, onCreate, onDelete, isSaving }: Availa
           <Form className="availability-form">
             <label>
               <span>Tarih</span>
-              <input type="date" name="date" value={values.date} onChange={handleChange} />
+              <input type="date" name="date" value={values.date} onChange={handleChange} className="form-input" />
             </label>
             <label>
               <span>Tür</span>
-              <select name="type" value={values.type} onChange={handleChange}>
+              <select name="type" value={values.type} onChange={handleChange} className="form-input">
                 <option value={0}>İzin (Tam Gün)</option>
                 <option value={1}>Ek Mesai / Uygunluk</option>
               </select>
             </label>
             <label>
               <span>Başlangıç</span>
-              <input type="time" name="startTime" value={values.startTime} onChange={handleChange} />
+              <input type="time" name="startTime" value={values.startTime} onChange={handleChange} className="form-input" />
             </label>
             <label>
               <span>Bitiş</span>
-              <input type="time" name="endTime" value={values.endTime} onChange={handleChange} />
+              <input type="time" name="endTime" value={values.endTime} onChange={handleChange} className="form-input" />
             </label>
             <label>
               <span>Açıklama</span>
-              <input name="reason" value={values.reason} onChange={handleChange} />
+              <input name="reason" value={values.reason} onChange={handleChange} className="form-input" />
             </label>
             <button type="submit" className="secondary" disabled={isSaving}>
               {isSaving ? "Kaydediliyor..." : "Ekle"}
