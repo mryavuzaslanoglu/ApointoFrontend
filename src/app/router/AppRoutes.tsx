@@ -6,6 +6,9 @@ import { DashboardPage } from "@/pages/dashboard/DashboardPage";
 import { BusinessSettingsPage } from "@/pages/business/BusinessSettingsPage";
 import { StaffManagementPage } from "@/pages/staff/StaffManagementPage";
 import { ServiceCatalogPage } from "@/pages/services/ServiceCatalogPage";
+import { BookAppointmentPage } from "@/pages/appointments/BookAppointmentPage";
+import { MyAppointmentsPage } from "@/pages/appointments/MyAppointmentsPage";
+import { AdminCalendarPage } from "@/pages/admin/AdminCalendarPage";
 import { LoginPage } from "@/pages/auth/LoginPage";
 import { RegisterPage } from "@/pages/auth/RegisterPage";
 import { ForgotPasswordPage } from "@/pages/auth/ForgotPasswordPage";
@@ -34,6 +37,9 @@ export function AppRoutes() {
         <Route path="business" element={<BusinessSettingsPage />} />
         <Route path="staff" element={<StaffManagementPage />} />
         <Route path="services" element={<ServiceCatalogPage />} />
+        <Route path="book-appointment" element={<BookAppointmentPage />} />
+        <Route path="appointments" element={<MyAppointmentsPage />} />
+        <Route path="admin/calendar" element={<AdminCalendarPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

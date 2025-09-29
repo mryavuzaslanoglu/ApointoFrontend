@@ -15,31 +15,60 @@ import {
 import { useAuthActions } from "@/features/auth/model/useAuthActions";
 import { useAuthStore } from "@/entities/auth/model/authStore";
 
-const NAV_ITEMS: NavItem[] = [
+const ADMIN_NAV_ITEMS: NavItem[] = [
   {
     to: "/",
     label: "Gösterge Paneli",
     description: "Genel durum, özet metrikler ve hızlı bağlantılar",
     icon: LayoutDashboard,
     end: true,
+    roles: ["Admin"],
   },
   {
     to: "/business",
     label: "İşletme Ayarları",
     description: "Kimlik bilgileri, iletişim ve çalışma düzeni",
     icon: Building2,
+    roles: ["Admin"],
   },
   {
     to: "/staff",
     label: "Personeller",
     description: "Ekip üyeleri ve rollerinizi yönetin",
     icon: Users2,
+    roles: ["Admin"],
   },
   {
     to: "/services",
     label: "Hizmetler",
     description: "Hizmet kartları, süreler ve fiyatlar",
     icon: Sparkles,
+    roles: ["Admin"],
+  },
+];
+
+const CUSTOMER_NAV_ITEMS: NavItem[] = [
+  {
+    to: "/",
+    label: "Ana Sayfa",
+    description: "Randevu alma ve genel bilgiler",
+    icon: LayoutDashboard,
+    end: true,
+    roles: ["Customer"],
+  },
+  {
+    to: "/book-appointment",
+    label: "Randevu Al",
+    description: "Yeni randevu oluştur",
+    icon: Sparkles,
+    roles: ["Customer"],
+  },
+  {
+    to: "/appointments",
+    label: "Randevularım",
+    description: "Mevcut ve geçmiş randevularım",
+    icon: Users2,
+    roles: ["Customer"],
   },
 ];
 
@@ -49,6 +78,7 @@ type NavItem = {
   description: string;
   icon: LucideIcon;
   end?: boolean;
+  roles: string[];
 };
 
 export function MainShell() {
@@ -84,12 +114,29 @@ export function MainShell() {
     setIsSidebarOpen(false);
   }, [location.pathname]);
 
+  // Get navigation items based on user role
+  const navItems = useMemo(() => {
+    if (!user?.roles) return [];
+
+    const userRoles = user.roles;
+    const isAdmin = userRoles.includes('Admin');
+    const isCustomer = userRoles.includes('Customer');
+
+    if (isAdmin) {
+      return ADMIN_NAV_ITEMS;
+    } else if (isCustomer) {
+      return CUSTOMER_NAV_ITEMS;
+    }
+
+    return [];
+  }, [user?.roles]);
+
   const activeNav = useMemo(() => {
-    const current = NAV_ITEMS.find((item) =>
+    const current = navItems.find((item) =>
       item.end ? location.pathname === item.to : location.pathname.startsWith(item.to)
     );
-    return current ?? NAV_ITEMS[0];
-  }, [location.pathname]);
+    return current ?? navItems[0];
+  }, [location.pathname, navItems]);
 
   const displayName = useMemo(() => {
     if (!user) {
@@ -121,11 +168,16 @@ export function MainShell() {
             <span className="brand-mark" />
             Apointo
           </span>
-          <p className="brand-subtitle">Randevu yönetim kontrol paneli</p>
+          <p className="brand-subtitle">
+            {user?.roles?.includes('Admin')
+              ? 'Randevu yönetim kontrol paneli'
+              : 'Randevu sistemi'
+            }
+          </p>
         </div>
 
         <nav className="sidebar-nav">
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
